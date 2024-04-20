@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+  <title>Invotractor v0.0.1 | Home</title>
+  <link rel="stylesheet" href="/css/globals.css">
+</head>
+<body>
+  <h1>Hello, world!</h1>
+  <div id="hours-table">
+    <div class="table-header">
+      <h3>Description</h3>
+      <h3>Hours</h3>
+      <h3>Rate</h3>
+      <h3>Total</h3>
+    </div>
+    <div hx-get="/components/new-hourly-row" hx-swap="outerHTML" hx-trigger="load"></div>
+  </div>
+</body>
+</html>
