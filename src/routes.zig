@@ -1,5 +1,8 @@
 const std = @import("std");
 const zap = @import("zap");
+const Mustache = @import("zap").Mustache;
+
+const hourly = @import("tables/hourly.zig");
 
 const Allocator = std.mem.Allocator;
 const ZRequest = zap.Request;
@@ -18,9 +21,33 @@ pub const ApplicationRouter = struct {
         req.sendBody(@embedFile("components/index.html")) catch return;
     }
 
-    pub fn getNewHourlyRow(self: *Self, req: ZRequest) void {
+    pub fn getNewHourlyRowForm(self: *Self, req: ZRequest) void {
         _ = self;
         req.sendBody(@embedFile("components/components/new-hourly-row.html")) catch return;
+    }
+
+    pub fn addHourlyRow(self: *Self, req: ZRequest) void {
+        _ = self;
+        const row: []const u8 = req.body orelse return;
+        std.debug.print("Body: '{s}'\n{s}\n", .{ row, req.method.? });
+        const data = hourly.HourlyTableRecord.fromHtmlBody(row) catch |err| {
+            std.debug.print("Body Parse Error: {?}\n", .{err});
+            return;
+        };
+        var stache = Mustache.fromData(@embedFile("components/components/hourly-row.mustache.html")) catch |err| {
+            std.debug.print("Mustache Init Error: {?}\n", .{err});
+            return;
+        };
+        defer stache.deinit();
+        const markup = stache.build(.{ .desc = data.desc, .rate = data.rate, .hour = data.hour, .total = data.total });
+        defer markup.deinit();
+        if (markup.str()) |s| {
+            std.debug.print("Sending a formatted response.\n", .{});
+            req.sendBody(s) catch return;
+        } else {
+            std.debug.print("Could not send a formatted response.\n", .{});
+            req.sendBody("<div>mustacheBuild() failed!</div>") catch return;
+        }
     }
 };
 
@@ -37,7 +64,8 @@ pub fn initRouter() !zap.Router {
 
     var appRouter = ApplicationRouter.init(allocator);
     try router.handle_func("/", &appRouter, &ApplicationRouter.getIndex);
-    try router.handle_func("/components/new-hourly-row", &appRouter, &ApplicationRouter.getNewHourlyRow);
+    try router.handle_func("/components/new-hourly-row", &appRouter, &ApplicationRouter.getNewHourlyRowForm);
+    try router.handle_func("/api/add-row", &appRouter, &ApplicationRouter.addHourlyRow);
 
     return router;
 }
