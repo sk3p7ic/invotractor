@@ -4,11 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <title>Invotractor v0.0.1 | Home</title>
   <link rel="stylesheet" href="/css/globals.css">
+  <script src="/js/index.js" defer></script>
 </head>
 <body>
-  <h1>Hello, world!</h1>
   <div id="hours-table">
     <div class="table-header">
       <h3>Description</h3>
@@ -17,6 +18,10 @@
       <h3>Total</h3>
     </div>
     <div hx-get="/components/new-hourly-row" hx-swap="outerHTML" hx-trigger="load"></div>
+    <div class="table-footer">
+      <h3>Total</h3>
+      <p>$0.00</p>
+    </div>
   </div>
 </body>
 </html>

@@ -30,3 +30,19 @@ pub const HourlyTableRecord = struct {
         return .{ .desc = desc, .hour = hour, .rate = rate, .total = @as(f32, @floatFromInt(hour)) * rate };
     }
 };
+
+pub const FormattedHourlyTableRecord = struct {
+    const Self = @This();
+
+    desc: []const u8,
+    hour: []const u8,
+    rate: []const u8,
+    total: []const u8,
+
+    pub fn fromHourlyTableRecord(r: HourlyTableRecord) !Self {
+        const hour = try std.fmt.allocPrint(std.heap.page_allocator, "{d:.2}", .{r.hour});
+        const rate = try std.fmt.allocPrint(std.heap.page_allocator, "${d:.2}", .{r.rate});
+        const total = try std.fmt.allocPrint(std.heap.page_allocator, "${d:.2}", .{r.total});
+        return .{ .desc = r.desc, .hour = hour, .rate = rate, .total = total };
+    }
+};

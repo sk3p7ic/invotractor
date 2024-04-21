@@ -34,12 +34,16 @@ pub const ApplicationRouter = struct {
             std.debug.print("Body Parse Error: {?}\n", .{err});
             return;
         };
+        const stringified = hourly.FormattedHourlyTableRecord.fromHourlyTableRecord(data) catch |err| {
+            std.debug.print("Body Stringification Error: {?}\n", .{err});
+            return;
+        };
         var stache = Mustache.fromData(@embedFile("components/components/hourly-row.mustache.html")) catch |err| {
             std.debug.print("Mustache Init Error: {?}\n", .{err});
             return;
         };
         defer stache.deinit();
-        const markup = stache.build(.{ .desc = data.desc, .rate = data.rate, .hour = data.hour, .total = data.total });
+        const markup = stache.build(.{ .desc = stringified.desc, .rate = stringified.rate, .hour = stringified.hour, .total = stringified.total });
         defer markup.deinit();
         if (markup.str()) |s| {
             std.debug.print("Sending a formatted response.\n", .{});
